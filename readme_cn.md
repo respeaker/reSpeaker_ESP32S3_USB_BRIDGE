@@ -43,8 +43,8 @@ reSpeaker XVF3800 必须运行与所选采样率和 I2S 角色相匹配的固件
 reSpeaker XVF3800 接收播放参考信号，codec 则将音频转换为播放输出。
 codec 的初始化和配置由 reSpeaker XVF3800 固件完成；ESP32-S3 桥接固件负责提供 I2S 音频流。
 
-音频接线、缓冲和诊断说明见 [PLAYBACK.md](PLAYBACK.md)。
-I2C 接线、Python 工具和 CDC 协议说明见 [CONTROL.md](CONTROL.md)。
+音频接线、缓冲和诊断说明见 [playback_cn.md](playback_cn.md)。
+I2C 接线、Python 工具和 CDC 协议说明见 [control_cn.md](control_cn.md)。
 
 ## 编译
 
@@ -91,6 +91,6 @@ arduino-cli compile --profile xiao_esp32s3 .
 
 控制 CDC 接口支持接收 Arduino 的重启进入 bootloader 请求，用于通过 USB 上传固件。
 烧录期间音频会停止，重启后恢复。如果板上现有固件无法自动进入下载模式，请按住 BOOT，按下并松开 RESET，再松开 BOOT，然后选择下载端口。
-重启行为和恢复方法详见 [CONTROL.md](CONTROL.md)。
+重启行为和恢复方法详见 [control_cn.md](control_cn.md)。
 
 使用其他 ESP32-S3 开发板时，请根据实际接线调整开发板选项和引脚常量。音频缓冲区和 DMA 使用片内 SRAM。

@@ -78,7 +78,7 @@ void execute(const respeaker::Request &request, uint32_t epoch) {
     return;
   }
   if (request.operation == 'P') {
-    const uint8_t version[] = {'X', 'V', 'F', '1'};
+    const uint8_t version[] = {'r', 'e', 's', 'p', 'e', 'a', 'k', 'e', 'r'};
     sendResult(request.sequence, 0, version, sizeof(version), epoch);
     return;
   }
