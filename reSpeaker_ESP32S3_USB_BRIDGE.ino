@@ -555,6 +555,10 @@ void setup() {
   }
   gUac.onEvent(usbEventCallback);
 
+  // Advertise IAD support for the CDC + audio composite device on Windows.
+  USB.usbClass(0xEF);
+  USB.usbSubClass(0x02);
+  USB.usbProtocol(0x01);
   USB.manufacturerName("reSpeaker ESP32S3 USB Bridge");
   USB.productName(BRIDGE_USB_PRODUCT);
   USB.serialNumber(BRIDGE_USB_SERIAL);
