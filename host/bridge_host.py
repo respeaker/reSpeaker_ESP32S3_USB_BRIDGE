@@ -76,6 +76,10 @@ class BridgeError(RuntimeError):
     pass
 
 
+class CdcTimeoutError(BridgeError):
+    pass
+
+
 class CdcBridge:
     """One outstanding request per port. A timeout leaves writes indeterminate."""
 
@@ -84,13 +88,13 @@ class CdcBridge:
         self.timeout = timeout
         self.sequence = secrets.randbelow(65535) + 1
 
-    def exchange(self, operation, fields=""):
+    def exchange(self, operation, fields="", timeout=None):
         sequence = self.sequence
         self.sequence = sequence % 65535 + 1
         request = f"{operation} {sequence}{(' ' + fields) if fields else ''}\n".encode("ascii")
         if self.serial.write(request) != len(request):
             raise BridgeError("Incomplete CDC write; outcome unknown, not retried")
-        deadline = time.monotonic() + self.timeout
+        deadline = time.monotonic() + (self.timeout if timeout is None else timeout)
         while time.monotonic() < deadline:
             line = self.serial.read_until(b"\n", 192)
             if not line:
@@ -116,7 +120,7 @@ class CdcBridge:
             except ValueError as exc:
                 raise BridgeError(f"Malformed CDC response: {line!r}") from exc
             return status, data
-        raise BridgeError("CDC response timed out; outcome unknown, not retried")
+        raise CdcTimeoutError("CDC response timed out; outcome unknown, not retried")
 
     def audio_status(self):
         status, payload = self.exchange("S")
@@ -149,12 +153,21 @@ class CdcBridge:
             self.serial.write(b"\n")
             try:
                 # Match the firmware handshake signature exactly (lowercase ASCII).
-                if self.exchange("P") != (0, b"respeaker"):
+                if self.exchange("P", timeout=min(self.timeout, 0.5)) != (0, b"respeaker"):
                     raise BridgeError('Ping failed, please check whether "reSpeaker_ESP32S3_USB_BRIDGE.ino" was flashed successfully.')
                 return
-            except BridgeError:
+            except BridgeError as exc:
                 if attempt == 2:
                     raise
+                if isinstance(exc, CdcTimeoutError):
+                    # On Windows, reopening the port can leave Arduino's
+                    # enabled DTR/RTS reboot state machine halfway through a
+                    # reset sequence. The CDC then stays disconnected and
+                    # repeating PING alone cannot recover it. Change DTR only;
+                    # keep RTS asserted so this cannot complete a boot reset.
+                    self.serial.dtr = False
+                    time.sleep(0.05)
+                    self.serial.dtr = True
                 time.sleep(0.05)
 
     def command(self, entry, values=None, attempts=100):

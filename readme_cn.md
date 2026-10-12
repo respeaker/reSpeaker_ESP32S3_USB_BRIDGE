@@ -81,6 +81,7 @@ arduino-cli compile --profile xiao_esp32s3 .
 | Board | Seeed Studio XIAO_ESP32S3 |
 | USB Mode | USB-OTG (TinyUSB) |
 | USB CDC On Boot | Disabled |
+| Upload Mode | USB-OTG CDC (TinyUSB) |
 | USB Firmware MSC On Boot | Disabled |
 | USB DFU On Boot | Disabled |
 | CPU Frequency | 240 MHz |
@@ -88,6 +89,10 @@ arduino-cli compile --profile xiao_esp32s3 .
 
 点击 **Verify（验证）** 进行编译。固件会自行创建 CDC 接口，因此必须保持 CDC On Boot 为 Disabled。
 在项目固定的 CLI 配置中，`CDCOnBoot=cdc` 对应 Disabled。
+
+程序会在编译时检查这三个 USB 设置。Upload Mode 没有独立编译宏，因此通过
+`ARDUINO_FQBN` 检查；CLI 配置显式指定 `UploadMode=cdc`，启用 1200 波特率
+重启请求以及等待下载端口的上传流程。
 
 控制 CDC 接口支持接收 Arduino 的重启进入 bootloader 请求，用于通过 USB 上传固件。
 烧录期间音频会停止，重启后恢复。如果板上现有固件无法自动进入下载模式，请按住 BOOT，按下并松开 RESET，再松开 BOOT，然后选择下载端口。

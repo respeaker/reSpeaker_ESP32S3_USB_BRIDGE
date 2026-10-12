@@ -94,6 +94,7 @@ and use these settings:
 | Board | Seeed Studio XIAO_ESP32S3 |
 | USB Mode | USB-OTG (TinyUSB) |
 | USB CDC On Boot | Disabled |
+| Upload Mode | USB-OTG CDC (TinyUSB) |
 | USB Firmware MSC On Boot | Disabled |
 | USB DFU On Boot | Disabled |
 | CPU Frequency | 240 MHz |
@@ -102,6 +103,11 @@ and use these settings:
 Select **Verify** to compile. The firmware creates its own CDC interface, so
 CDC On Boot must remain disabled. In the pinned CLI profile, `CDCOnBoot=cdc`
 corresponds to Disabled.
+
+The sketch checks these three USB settings at compile time. Upload Mode is
+checked through `ARDUINO_FQBN`, because the core does not define a separate
+upload-mode macro. The CLI profile explicitly selects `UploadMode=cdc` to
+request the 1200-baud reset and wait for the download port.
 
 The control CDC accepts Arduino's bootloader reset request for USB uploads.
 Audio stops during flashing and returns after restarting. If the installed

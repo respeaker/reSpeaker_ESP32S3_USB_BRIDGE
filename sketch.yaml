@@ -1,6 +1,6 @@
 profiles:
   xiao_esp32s3:
-    fqbn: esp32:esp32:XIAO_ESP32S3:USBMode=default,CDCOnBoot=cdc,MSCOnBoot=default,DFUOnBoot=default,CPUFreq=240,PSRAM=disabled
+    fqbn: esp32:esp32:XIAO_ESP32S3:USBMode=default,CDCOnBoot=cdc,UploadMode=cdc,MSCOnBoot=default,DFUOnBoot=default,CPUFreq=240,PSRAM=disabled
     platforms:
       - platform: esp32:esp32 (3.3.11)
 default_profile: xiao_esp32s3

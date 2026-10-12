@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "bridge_config.h"
+#include "bridge_usb_settings.h"
 
 #include <algorithm>
 #include <atomic>
@@ -18,18 +19,8 @@
 #error "reSpeaker_ESP32S3_USB_BRIDGE requires an ESP32-S3"
 #endif
 
-#ifndef ARDUINO_USB_MODE
-#error "The selected board does not expose a native USB interface"
-#elif ARDUINO_USB_MODE == 1
-#error "Select Tools > USB Mode > USB-OTG (TinyUSB)"
-#endif
-
 #if !defined(CONFIG_TINYUSB_AUDIO_ENABLED) || !CONFIG_TINYUSB_AUDIO_ENABLED
 #error "TinyUSB Audio is disabled; use Arduino-ESP32 3.3.11 or newer"
-#endif
-
-#if defined(ARDUINO_USB_CDC_ON_BOOT) && ARDUINO_USB_CDC_ON_BOOT
-#error "Disable USB CDC On Boot: respeaker_control creates the control CDC port explicitly"
 #endif
 
 #if defined(ARDUINO_USB_MSC_ON_BOOT) && ARDUINO_USB_MSC_ON_BOOT
